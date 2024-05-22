@@ -16,6 +16,7 @@ enum key_state
 #define KEY_JOY_CENTER  0x05
 #define KEY_BTN_LEFT1   0x06
 #define KEY_BTN_RIGHT1  0x07
+
 #define KEY_BACKSPACE   0x08 
 #define KEY_TAB         0x09
 #define KEY_ENTER       0x0A 
@@ -28,7 +29,7 @@ enum key_state
 #define KEY_MOD_SHL     0x1B
 #define KEY_MOD_SHR     0x1C
 #define KEY_MOD_SYM     0x1D
-#define KEY_MOD_CTRL    0x1E
+#define KEY_MOD_CTRL    0x7E
 
 #define KEY_ESC       0xB1
 #define KEY_UP        0xb5
