@@ -15,6 +15,8 @@
 
 HardwareSerial Serial1(PA10, PA9);
 
+uint8_t write_buffer[2];
+  
 unsigned long time_uptime_ms(){
   return millis();
 }
@@ -73,19 +75,62 @@ static void key_cb(char key, enum key_state state)
   
 }
 
+void receiveEvent(int howMany)
+{
+  
+  uint8_t rcv_data[2];//max size 2, protocol defined
+  uint8_t rcv_idx;
 
-//---------------------------------------
+  if(Wire.available() < 1) return;
+ 
+  rcv_idx =0;
+  while(Wire.available()) // loop through all but the last
+  {
+    uint8_t c = Wire.read(); // receive byte as a character
+    rcv_data[rcv_idx] = c;
+    rcv_idx++;
+    if(rcv_idx>=2){
+      rcv_idx = 0;
+    }
+  }
+
+  const bool is_write = (rcv_data[0] & WRITE_MASK);
+  const uint8_t reg = (rcv_data[0] & ~WRITE_MASK);
+
+  switch(reg){
+    case REG_ID_FIF:{
+        const struct fifo_item item = fifo_dequeue();
+        write_buffer[0] = (uint8_t)item.state;
+        write_buffer[1] = (uint8_t)item.key;
+    }
+        break;
+    default:
+    {
+      write_buffer[0] = 0;
+      write_buffer[1] = 0;
+    }
+      break;     
+  }
+
+}
+
+
+//-thi is after receiveEvent-------------------------------
 void requestEvent()
 {
-  //if keys pressed ,then Wire.write(xxxx); 
-  const struct fifo_item item = fifo_dequeue();
-  if (item.key!= 0) {
-    Wire.write(item.key);
-  }
+
+  Wire.write(write_buffer,2);
+
 }
 
 void setup() {
 
+  Wire.setSDA(PB9);
+  Wire.setSCL(PB8);
+  Wire.begin(SLAVE_ADDRESS);
+  Wire.onReceive(receiveEvent); // register event
+  Wire.onRequest(requestEvent);
+  
   pinMode(PA13, OUTPUT);//pico enable
   delay(100);
   digitalWrite(PA13, HIGH);   
@@ -129,8 +174,7 @@ void setup() {
   analogWriteFrequency(10000); 
   analogWrite(pin, 100); 
   
-  Wire.begin(0x5f);
-  Wire.onRequest(requestEvent);
+  //Wire.onRequest(requestEvent);
 
   Serial1.begin(115200); 
 

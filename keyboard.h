@@ -70,7 +70,7 @@ void keyboard_init(void);
 
 #define NUM_OF_BTNS 12
 
-#define KEY_POLL_TIME 10
+#define KEY_POLL_TIME 16
 
 #define KEY_LIST_SIZE 10
 

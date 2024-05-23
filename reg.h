@@ -41,6 +41,8 @@ enum reg_id
 
 #define VER_VAL       ((VERSION_MAJOR << 4) | (VERSION_MINOR << 0))
 
+#define WRITE_MASK (1<<7)
+
 uint8_t reg_get_value(enum reg_id reg);
 void reg_set_value(enum reg_id reg, uint8_t value);
 bool reg_is_bit_set(enum reg_id reg, uint8_t bit);
