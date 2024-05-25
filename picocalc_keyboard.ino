@@ -128,6 +128,7 @@ void setup() {
   Wire.setSDA(PB9);
   Wire.setSCL(PB8);
   Wire.begin(SLAVE_ADDRESS);
+  Wire.setClock(100000);//must be as same as master(pico,Option.SYSTEM_I2C_SLOW=1;)
   Wire.onReceive(receiveEvent); // register event
   Wire.onRequest(requestEvent);
   
