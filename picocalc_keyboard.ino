@@ -9,7 +9,7 @@
 #include "port.h"
 #include "fifo.h"
 #include "keyboard.h"
-
+#include "backlight.h"
 
 #define DEBUG_UART
 
@@ -97,6 +97,8 @@ void receiveEvent(int howMany)
   const bool is_write = (rcv_data[0] & WRITE_MASK);
   const uint8_t reg = (rcv_data[0] & ~WRITE_MASK);
 
+  write_buffer[0] = 0;
+  write_buffer[1] = 0;
   switch(reg){
     case REG_ID_FIF:{
         const struct fifo_item item = fifo_dequeue();
@@ -104,6 +106,12 @@ void receiveEvent(int howMany)
         write_buffer[1] = (uint8_t)item.key;
     }
         break;
+    case REG_ID_BKL:{
+        reg_set_value(REG_ID_BKL,rcv_data[1]);
+        lcd_backlight_update();
+        write_buffer[0] = reg;
+        write_buffer[1] = reg_get_value(REG_ID_BKL);
+    }   break;
     default:
     {
       write_buffer[0] = 0;
@@ -122,7 +130,10 @@ void requestEvent()
   Wire.write(write_buffer,2);
 
 }
-
+/*
+ * PA8 lcd_bl
+ * PC8 keyboard_bl
+ */
 void setup() {
 
   Wire.setSDA(PB9);
