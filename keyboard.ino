@@ -129,7 +129,16 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
         const bool alt = self.mods[MOD_ALT] | self.numlock;
  
         if (shift && (chr <'A' || chr >'Z')) {
-            chr = p_entry->symb;
+            if(self.capslock){
+              if(chr == KEY_BACKSPACE || chr == KEY_ENTER){
+                //keep
+              }else{
+                chr = p_entry->symb;
+              }
+            }else{
+              chr = p_entry->symb;
+            }
+            
         }else if(self.capslock && (chr >= 'A' && chr <= 'Z')){
            //pass
         }
