@@ -127,7 +127,8 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
       if (reg_is_bit_set(REG_ID_CFG, CFG_USE_MODS)) {
         const bool shift = (self.mods[MOD_SHL] || self.mods[MOD_SHR]) | self.capslock;
         const bool alt = self.mods[MOD_ALT] | self.numlock;
- 
+        const bool ctrl = self.mods[MOD_CTRL];//shortcuts control
+        
         if (shift && (chr <'A' || chr >'Z')) {
             if(self.capslock){
               if(chr == KEY_BACKSPACE || chr == KEY_ENTER){

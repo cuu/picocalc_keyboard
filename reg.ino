@@ -40,4 +40,5 @@ void reg_init(void)
   regs[REG_ID_DEB] = 10;
   regs[REG_ID_FRQ] = 5;
   regs[REG_ID_BKL] = 255;//100%duty
+  regs[REG_ID_BAT] = 0xff; //default .no battery 
 }
