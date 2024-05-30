@@ -350,6 +350,9 @@ void setup() {
 
   digitalWrite(PC13, LOW);
 
+  pinMode(PA14, OUTPUT);  // PA_EN
+  digitalWrite(PA14, HIGH);
+  
   int pin = PC8;
 
   /*
@@ -417,6 +420,7 @@ void setup() {
                 // XPOWERS_AXP2101_PKEY_POSITIVE_IRQ   |   //POWER KEY
   );
 
+  
   digitalWrite(PA13, HIGH);
 
   run_time = 0;
