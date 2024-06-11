@@ -19,6 +19,9 @@ TwoWire Wire2 = TwoWire(CONFIG_PMU_SDA, CONFIG_PMU_SCL);
 bool pmu_flag = 0;
 bool pmu_online = 0;
 uint8_t pmu_status = 0;
+
+uint8_t head_phone_status=LOW;
+
 XPowersPMU PMU;
 
 const uint8_t i2c_sda = CONFIG_PMU_SDA;
@@ -342,7 +345,9 @@ void setup() {
     pmu_online = 1;
     Serial1.printf("getID:0x%x\n", PMU.getChipID());
   }
-
+  
+  pinMode(PC12, INPUT);  // HP_DET
+  
   pinMode(PA13, OUTPUT);  // pico enable
   digitalWrite(PA13, LOW);
 
@@ -420,15 +425,26 @@ void setup() {
                 // XPOWERS_AXP2101_PKEY_POSITIVE_IRQ   |   //POWER KEY
   );
 
-  
+ 
   digitalWrite(PA13, HIGH);
 
   run_time = 0;
   printf("Start pico");
 }
 
+void check_hp_det(){
+  int v = digitalRead(PC12);
+  if(v == HIGH) {
+    if( head_phone_status != v ) {
+      Serial1.println("HeadPhone detected");
+    }
+  }
+  head_phone_status = v;
+  
+}
 void loop() {
   check_pmu_int();
   keyboard_process();
+  check_hp_det();
   delay(10);
 }
