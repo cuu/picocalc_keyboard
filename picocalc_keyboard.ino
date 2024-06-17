@@ -120,6 +120,12 @@ void receiveEvent(int howMany) {
       write_buffer[0] = reg;
       write_buffer[1] = reg_get_value(REG_ID_BKL);
     } break;
+    case REG_ID_KEY: {
+      write_buffer[0] = fifo_count();
+      write_buffer[0] |= keyboard_get_numlock()  ? KEY_NUMLOCK  : 0x00;
+      write_buffer[0] |= keyboard_get_capslock() ? KEY_CAPSLOCK : 0x00;
+
+    }break;
     default: {
       write_buffer[0] = 0;
       write_buffer[1] = 0;

@@ -38,7 +38,7 @@ enum reg_id
 
 #define KEY_CAPSLOCK    (1 << 5)
 #define KEY_NUMLOCK     (1 << 6)
-#define KEY_COUNT_MASK    0x1F
+#define KEY_COUNT_MASK    0x1F  //0x1F == 31
 
 #define VER_VAL       ((VERSION_MAJOR << 4) | (VERSION_MINOR << 0))
 
