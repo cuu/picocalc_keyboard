@@ -34,7 +34,10 @@ void set_pmu_flag(void) { pmu_flag = true; }
 
 HardwareSerial Serial1(PA10, PA9);
 
-uint8_t write_buffer[2];
+uint8_t write_buffer[10];
+uint8_t write_buffer_len = 0;
+
+uint8_t io_matrix[9];//for IO matrix,last bytye is the restore key(c64 only)
 
 unsigned long time_uptime_ms() { return millis(); }
 
@@ -108,6 +111,8 @@ void receiveEvent(int howMany) {
 
   write_buffer[0] = 0;
   write_buffer[1] = 0;
+  write_buffer_len = 2;
+  
   switch (reg) {
     case REG_ID_FIF: {
       const struct fifo_item item = fifo_dequeue();
@@ -126,15 +131,22 @@ void receiveEvent(int howMany) {
       write_buffer[0] |= keyboard_get_capslock() ? KEY_CAPSLOCK : 0x00;
 
     }break;
+    case REG_ID_C64_MTX:{
+      write_buffer[0] = reg;
+      memcpy(write_buffer + 1, io_matrix, sizeof(io_matrix));
+      write_buffer_len = 10;
+    }break;
     default: {
       write_buffer[0] = 0;
       write_buffer[1] = 0;
+
+      write_buffer_len = 2;
     } break;
   }
 }
 
 //-this is after receiveEvent-------------------------------
-void requestEvent() { Wire.write(write_buffer, 2); }
+void requestEvent() { Wire.write(write_buffer,write_buffer_len ); }
 
 void printPMU() {
   Serial1.print("isCharging:");
@@ -438,6 +450,7 @@ void setup() {
   printf("Start pico");
 }
 
+//hp headphone
 void check_hp_det(){
   int v = digitalRead(PC12);
   if(v == HIGH) {

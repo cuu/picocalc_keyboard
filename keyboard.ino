@@ -234,13 +234,16 @@ void keyboard_process(void)
 
   port_get_config_defaults(&port_init);
 
-  for (uint32_t c = 0; c < NUM_OF_COLS; ++c) {
+  for (uint8_t c = 0; c < NUM_OF_COLS; ++c) {
+    uint8_t col_value = 0;
     port_init.direction = PORT_PIN_DIR_OUTPUT;
     port_pin_set_config(col_pins[c], &port_init);
     port_pin_set_output_level(col_pins[c], 0);
 
-    for (uint32_t r = 0; r < NUM_OF_ROWS; ++r) {
-      const bool pressed = (port_pin_get_input_level(row_pins[r]) == 0);
+    for (uint8_t r = 0; r < NUM_OF_ROWS; ++r) {
+      uint8_t pin_value = port_pin_get_input_level(row_pins[r]);
+      const bool pressed = (pin_value == 0);
+      col_value |= (pin_value << r); 
       const int32_t key_idx = (int32_t)((r * NUM_OF_COLS) + c);
 
       int32_t list_idx = -1;
@@ -271,7 +274,7 @@ void keyboard_process(void)
         break;
       }
     }
-
+    io_matrix[c] = col_value; 
     port_pin_set_output_level(col_pins[c], 1);
 
     port_init.direction = PORT_PIN_DIR_INPUT;
@@ -280,11 +283,14 @@ void keyboard_process(void)
   }
 
 #if NUM_OF_BTNS > 0
-  for (uint32_t b = 0; b < NUM_OF_BTNS; ++b) {
-    const bool pressed = (port_pin_get_input_level(btn_pins[b]) == 0);
-
-    int32_t list_idx = -1;
-    for (int32_t i = 0; i < KEY_LIST_SIZE; ++i) {
+  for (uint8_t b = 0; b < NUM_OF_BTNS; ++b) {
+    uint8_t pin_value = port_pin_get_input_level(btn_pins[b]);
+    const bool pressed = (pin_value == 0);
+    if( b < 8 ) {// read BTN1->BTN8
+      io_matrix[b] |= ( pin_value << 7);
+    }
+    int8_t list_idx = -1;
+    for (int8_t i = 0; i < KEY_LIST_SIZE; ++i) {
       if (self.list[i].p_entry != &((const struct entry*)btn_entries)[b])
         continue;
 
@@ -300,7 +306,7 @@ void keyboard_process(void)
     if (!pressed)
       continue;
 
-    for (uint32_t i = 0 ; i < KEY_LIST_SIZE; ++i) {
+    for (uint8_t i = 0 ; i < KEY_LIST_SIZE; ++i) {
       if (self.list[i].p_entry != NULL)
         continue;
 
@@ -312,7 +318,7 @@ void keyboard_process(void)
     }
   }
 #endif
-
+  io_matrix[8] = 0xFF;
   self.last_process_time = time_uptime_ms();
 }
 
