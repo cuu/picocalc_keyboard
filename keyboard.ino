@@ -299,7 +299,7 @@ void keyboard_process(void)
         io_matrix[b] |= ( 1 << 7);
       }
     }else{//c64 joystick arrow keys
-      //B10 = up, B11=down,B12=left,B9 = right
+      //B12=left,, B11=down,B10 = up,B9 = right
       uint8_t btn_bts = b-8;
       if(pressed){
         js_bits &= ~(1<<btn_bts);
