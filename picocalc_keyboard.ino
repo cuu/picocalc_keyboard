@@ -38,6 +38,7 @@ uint8_t write_buffer[10];
 uint8_t write_buffer_len = 0;
 
 uint8_t io_matrix[9];//for IO matrix,last bytye is the restore key(c64 only)
+uint8_t js_bits=0x0f;// c64 joystick bits
 
 unsigned long time_uptime_ms() { return millis(); }
 
@@ -135,6 +136,11 @@ void receiveEvent(int howMany) {
       write_buffer[0] = reg;
       memcpy(write_buffer + 1, io_matrix, sizeof(io_matrix));
       write_buffer_len = 10;
+    }break;
+    case REG_ID_C64_JS:{
+      write_buffer[0] = reg;
+      write_buffer[1] = js_bits;
+      write_buffer_len = 2;
     }break;
     default: {
       write_buffer[0] = 0;

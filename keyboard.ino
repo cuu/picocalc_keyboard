@@ -243,7 +243,12 @@ void keyboard_process(void)
     for (uint8_t r = 0; r < NUM_OF_ROWS; ++r) {
       uint8_t pin_value = port_pin_get_input_level(row_pins[r]);
       const bool pressed = (pin_value == 0);
-      col_value |= (pin_value << r); 
+      uint8_t row_bit = (1<<r);
+      if(pressed){
+        col_value &= ~row_bit; 
+      }else{
+        col_value |= row_bit;
+      }
       const int32_t key_idx = (int32_t)((r * NUM_OF_COLS) + c);
 
       int32_t list_idx = -1;
@@ -287,7 +292,20 @@ void keyboard_process(void)
     uint8_t pin_value = port_pin_get_input_level(btn_pins[b]);
     const bool pressed = (pin_value == 0);
     if( b < 8 ) {// read BTN1->BTN8
-      io_matrix[b] |= ( pin_value << 7);
+      
+      if(pressed){
+        io_matrix[b] &= ~(1 << 7);
+      }else{
+        io_matrix[b] |= ( 1 << 7);
+      }
+    }else{//c64 joystick arrow keys
+      //B10 = up, B11=down,B12=left,B9 = right
+      uint8_t btn_bts = b-8;
+      if(pressed){
+        js_bits &= ~(1<<btn_bts);
+      }else{
+        js_bits |= (1<<btn_bts);
+      }
     }
     int8_t list_idx = -1;
     for (int8_t i = 0; i < KEY_LIST_SIZE; ++i) {
