@@ -228,7 +228,8 @@ static void next_item_state(struct list_item * const p_item, const bool pressed)
 void keyboard_process(void)
 {
   struct port_config port_init;
-
+  js_bits = 0xff;
+  
   if ((time_uptime_ms() - self.last_process_time) <= KEY_POLL_TIME)
     return;
 
@@ -245,8 +246,14 @@ void keyboard_process(void)
       const bool pressed = (pin_value == 0);
       uint8_t row_bit = (1<<r);
       if(pressed){
+        if(c == 1 && r == 4){//enter key as fire
+          js_bits &= ~row_bit;
+        }
         col_value &= ~row_bit; 
       }else{
+        if(c == 1 && r == 4){//enter key as fire
+          js_bits |= row_bit;
+        }       
         col_value |= row_bit;
       }
       const int32_t key_idx = (int32_t)((r * NUM_OF_COLS) + c);

@@ -38,7 +38,7 @@ uint8_t write_buffer[10];
 uint8_t write_buffer_len = 0;
 
 uint8_t io_matrix[9];//for IO matrix,last bytye is the restore key(c64 only)
-uint8_t js_bits=0x0f;// c64 joystick bits
+uint8_t js_bits=0xff;// c64 joystick bits
 
 unsigned long time_uptime_ms() { return millis(); }
 
