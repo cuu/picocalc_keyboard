@@ -19,6 +19,7 @@ TwoWire Wire2 = TwoWire(CONFIG_PMU_SDA, CONFIG_PMU_SCL);
 bool pmu_flag = 0;
 bool pmu_online = 0;
 uint8_t pmu_status = 0;
+uint8_t keycb_start = 0;
 
 uint8_t head_phone_status=LOW;
 
@@ -66,6 +67,11 @@ void lock_cb(bool caps_changed, bool num_changed) {
 static void key_cb(char key, enum key_state state) {
   bool do_int = false;
 
+  if(keycb_start == 0){
+     fifo_flush();
+     return;
+  }
+  
   if (reg_is_bit_set(REG_ID_CFG, CFG_KEY_INT)) {
     reg_set_bit(REG_ID_INT, INT_KEY);
     do_int = true;
@@ -87,7 +93,7 @@ static void key_cb(char key, enum key_state state) {
     if (reg_is_bit_set(REG_ID_CFG, CFG_OVERFLOW_ON)) fifo_enqueue_force(item);
   }
 
-  Serial1.println(key);
+  //Serial1.println(key);
 }
 
 void receiveEvent(int howMany) {
@@ -350,9 +356,11 @@ void check_pmu_int() {
  * PC8 keyboard_bl
  */
 void setup() {
-  Serial1.begin(115200);
-
+  pinMode(PA13, OUTPUT);  // pico enable
+  digitalWrite(PA13, LOW);
   reg_init();
+  
+  Serial1.begin(115200);
 
   Wire.setSDA(PB9);
   Wire.setSCL(PB8);
@@ -361,6 +369,8 @@ void setup() {
   Wire.onReceive(receiveEvent);  // register event
   Wire.onRequest(requestEvent);
 
+  // no delay here
+   
   bool result = PMU.begin(Wire2, AXP2101_SLAVE_ADDRESS, i2c_sda, i2c_scl);
 
   if (result == false) {
@@ -369,11 +379,8 @@ void setup() {
     pmu_online = 1;
     Serial1.printf("getID:0x%x\n", PMU.getChipID());
   }
-  
+   
   pinMode(PC12, INPUT);  // HP_DET
-  
-  pinMode(PA13, OUTPUT);  // pico enable
-  digitalWrite(PA13, LOW);
 
   pinMode(PC13, OUTPUT);  // indicator led
 
@@ -421,6 +428,9 @@ void setup() {
   keyboard_init();
   keyboard_set_key_callback(key_cb);
 
+  digitalWrite(PA13, HIGH);
+
+
   // It is necessary to disable the detection function of the TS pin on the
   // board without the battery temperature detection function, otherwise it will
   // cause abnormal charging
@@ -449,11 +459,10 @@ void setup() {
                 // XPOWERS_AXP2101_PKEY_POSITIVE_IRQ   |   //POWER KEY
   );
 
- 
-  digitalWrite(PA13, HIGH);
-
   run_time = 0;
-  printf("Start pico");
+  keycb_start = 1;
+  
+  //printf("Start pico");
 }
 
 //hp headphone
