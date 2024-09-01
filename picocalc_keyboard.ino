@@ -132,6 +132,14 @@ void receiveEvent(int howMany) {
       write_buffer[0] = reg;
       write_buffer[1] = reg_get_value(REG_ID_BKL);
     } break;
+    case REG_ID_BAT:{
+      write_buffer[0] = reg;
+      if (PMU.isBatteryConnect()) {
+        write_buffer[1] = PMU.getBatteryPercent();
+      }else{
+        write_buffer[1] = 0x00;
+      }
+    }break;
     case REG_ID_KEY: {
       write_buffer[0] = fifo_count();
       write_buffer[0] |= keyboard_get_numlock()  ? KEY_NUMLOCK  : 0x00;
@@ -299,9 +307,12 @@ void check_pmu_int() {
 
     if (PMU.isPekeyLongPressIrq()) {
       Serial1.println("isPekeyLongPress");
-      Serial1.println("write pmu data buffer .");
-      uint8_t data[4] = {1, 2, 3, 4};
-      PMU.writeDataBuffer(data, XPOWERS_AXP2101_DATA_BUFFER_SIZE);
+      //Serial1.println("write pmu data buffer .");
+      //uint8_t data[4] = {1, 2, 3, 4};
+      //PMU.writeDataBuffer(data, XPOWERS_AXP2101_DATA_BUFFER_SIZE);
+      digitalWrite(PA13, LOW);
+      digitalWrite(PA14, LOW);
+      PMU.shutdown();
     }
 
     if (PMU.isPekeyNegativeIrq()) {
