@@ -81,6 +81,7 @@ static struct {
 
 static void transition_to(struct list_item * const p_item, const enum key_state next_state)
 {
+  bool output = true;
   const struct entry * const p_entry = p_item->p_entry;
 
   p_item->state = next_state;
@@ -143,6 +144,25 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
         }else if(self.capslock && (chr >= 'A' && chr <= 'Z')){
            //pass
         }
+        else if(ctrl && (chr < 'A' || chr > 'Z')){
+          //ctrl for operators
+            if(next_state == KEY_STATE_PRESSED || next_state == KEY_STATE_RELEASED) {
+              if(chr == '<' || chr == '>' || chr == ' '){
+                output = false;            
+              }
+            }
+            if(next_state == KEY_STATE_RELEASED) {
+              
+              if(chr =='<'){
+                lcd_backlight_update(-40);
+              }else if(chr =='>'){
+                lcd_backlight_update(40);
+              }else if(chr == ' '){
+                //loop update keyboard backlight
+                kbd_backlight_update(80);
+              }
+            }
+        }
         else if (!shift && (chr >= 'A' && chr <= 'Z')) {
           chr = (chr + ' ');// uppercase to lowercase for a to z
         }
@@ -152,7 +172,7 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
     }
   }
 
-  if (chr != 0) {
+  if (chr != 0 && output==true) {
     self._key_callback(chr, next_state);
   }
 }
@@ -202,14 +222,16 @@ static void next_item_state(struct list_item * const p_item, const bool pressed)
     case KEY_STATE_PRESSED:
       if ((time_uptime_ms() - p_item->hold_start_time) > KEY_HOLD_TIME) {
         transition_to(p_item, KEY_STATE_HOLD);
+        
        } else if(!pressed) {
         transition_to(p_item, KEY_STATE_RELEASED);
       }
       break;
 
     case KEY_STATE_HOLD:
-      if (!pressed)
+      if (!pressed){       
         transition_to(p_item, KEY_STATE_RELEASED);
+      }
       break;
     case KEY_STATE_RELEASED:
     {

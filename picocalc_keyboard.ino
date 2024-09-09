@@ -128,7 +128,7 @@ void receiveEvent(int howMany) {
     } break;
     case REG_ID_BKL: {
       reg_set_value(REG_ID_BKL, rcv_data[1]);
-      lcd_backlight_update();
+      lcd_backlight_update_reg();
       write_buffer[0] = reg;
       write_buffer[1] = reg_get_value(REG_ID_BKL);
     } break;
