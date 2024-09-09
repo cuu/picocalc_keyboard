@@ -12,3 +12,6 @@ void lcd_backlight_update() {
   analogWriteFrequency(10000); 
   analogWrite(PA8, val); 
 }
+void kbd_backlight_update(int level){
+
+}

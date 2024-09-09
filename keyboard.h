@@ -25,11 +25,11 @@ enum key_state
 #define KEY_BTN_RIGHT2  0x12
 
 
-#define KEY_MOD_ALT     0x1A
-#define KEY_MOD_SHL     0x1B
-#define KEY_MOD_SHR     0x1C
-#define KEY_MOD_SYM     0x1D
-#define KEY_MOD_CTRL    0x7E
+#define KEY_MOD_ALT     0xA1
+#define KEY_MOD_SHL     0xA2
+#define KEY_MOD_SHR     0xA3
+#define KEY_MOD_SYM     0xA4
+#define KEY_MOD_CTRL    0xA5
 
 #define KEY_ESC       0xB1
 #define KEY_UP        0xb5
