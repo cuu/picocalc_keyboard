@@ -144,15 +144,29 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
         }else if(self.capslock && (chr >= 'A' && chr <= 'Z')){
            //pass
         }
-        else if(ctrl && (chr < 'A' || chr > 'Z')){
+        else if(alt){
           //ctrl for operators
-            if(next_state == KEY_STATE_PRESSED || next_state == KEY_STATE_RELEASED) {
+            if(next_state == KEY_STATE_PRESSED) {
               if(chr == '<' || chr == '>' || chr == ' '){
                 output = false;            
               }
+              if(chr == 'I'){
+                output = true;
+                chr = KEY_INSERT;              
+              }
             }
+            
+            if( next_state == KEY_STATE_RELEASED ) {
+              if(chr == '<' || chr == '>' || chr == ' '){
+                output = false;            
+              }
+               if(chr == 'I'){
+                output = true;
+                chr = KEY_INSERT;              
+              }             
+            }
+            
             if(next_state == KEY_STATE_RELEASED) {
-              
               if(chr =='<'){
                 lcd_backlight_update(-40);
               }else if(chr =='>'){
