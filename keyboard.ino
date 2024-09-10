@@ -39,9 +39,9 @@ static const struct entry kbd_entries[][NUM_OF_COLS] =
   {{KEY_BACKSPACE},       {KEY_DEL,KEY_END},{KEY_CAPS_LOCK},{KEY_TAB,KEY_HOME},{KEY_ESC,KEY_BREAK},{'4','$'},{'E'},     {'W'}},
   {{'P'},                 {'=','+'},        {'-','_'},      {'\\','|'},        {'/','?'},          {'R'},    {'S'},     {'1','!'}},
   {{KEY_ENTER,KEY_INSERT},{'8','*'},        {'7','&'},      {'6','^'},         {'5','%'},          {'F'},    {'X'},     {'Q'}},
-  {{'>','.'},             {'I'},            {'U'},          {'Y'},             {'T'},              {'V'},    {';',':'}, {'A'}},
+  {{'.','>'},             {'I'},            {'U'},          {'Y'},             {'T'},              {'V'},    {';',':'}, {'A'}},
   {{'L'},                 {'K'},            {'J'},          {'H'},             {'G'},              {'C'},    {'\'','"'},{'Z'}},
-  {{'O'},                 {'<',','},        {'M'},          {'N'},             {'B'},              {'D'},    {' '},     { }},
+  {{'O'},                 {',','<'},        {'M'},          {'N'},             {'B'},              {'D'},    {' '},     { }},
   
 };
 
@@ -147,7 +147,7 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
         else if(alt){
           //ctrl for operators
             if(next_state == KEY_STATE_PRESSED) {
-              if(chr == '<' || chr == '>' || chr == ' '){
+              if(chr == ',' || chr == '.' || chr == ' '){
                 output = false;            
               }
               if(chr == 'I'){
@@ -157,7 +157,7 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
             }
             
             if( next_state == KEY_STATE_RELEASED ) {
-              if(chr == '<' || chr == '>' || chr == ' '){
+              if(chr == ',' || chr == '.' || chr == ' '){
                 output = false;            
               }
                if(chr == 'I'){
@@ -167,9 +167,9 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
             }
             
             if(next_state == KEY_STATE_RELEASED) {
-              if(chr =='<'){
+              if(chr ==','){
                 lcd_backlight_update(-40);
-              }else if(chr =='>'){
+              }else if(chr =='.'){
                 lcd_backlight_update(40);
               }else if(chr == ' '){
                 //loop update keyboard backlight
