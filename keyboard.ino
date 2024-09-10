@@ -147,7 +147,7 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
         else if(alt){
           //ctrl for operators
             if(next_state == KEY_STATE_PRESSED) {
-              if(chr == ',' || chr == '.' || chr == ' '){
+              if(chr == ',' || chr == '.' || chr == ' ' || chr == 'B'){
                 output = false;            
               }
               if(chr == 'I'){
@@ -157,7 +157,7 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
             }
             
             if( next_state == KEY_STATE_RELEASED ) {
-              if(chr == ',' || chr == '.' || chr == ' '){
+              if(chr == ',' || chr == '.' || chr == ' ' || chr == 'B'){
                 output = false;            
               }
                if(chr == 'I'){
@@ -168,12 +168,15 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
             
             if(next_state == KEY_STATE_RELEASED) {
               if(chr ==','){
-                lcd_backlight_update(-40);
+                lcd_backlight_update(-LCD_BACKLIGHT_STEP);
               }else if(chr =='.'){
-                lcd_backlight_update(40);
+                lcd_backlight_update(LCD_BACKLIGHT_STEP);
               }else if(chr == ' '){
                 //loop update keyboard backlight
-                kbd_backlight_update(80);
+                //kbd_backlight_update(KBD_BACKLIGHT_STEP);
+                kbd_backlight_update_offset();
+              }else if(chr == 'B'){
+                show_bat_segs();
               }
             }
         }

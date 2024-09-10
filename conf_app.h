@@ -18,6 +18,11 @@
 #define CONFIG_PMU_IRQ PC9
 #endif
 
+
+#define LOW_BAT_VAL 20
+#define LCD_BACKLIGHT_STEP 20
+#define KBD_BACKLIGHT_STEP 40
+
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
 #define bitSet(value, bit) ((value) |= (1 << (bit)))
 #define bitClear(value, bit) ((value) &= ~(1 << (bit)))

@@ -13,6 +13,7 @@
 #include "pins.h"
 #include "port.h"
 #include "reg.h"
+#include "battery.h"
 
 #define DEBUG_UART
 TwoWire Wire2 = TwoWire(CONFIG_PMU_SDA, CONFIG_PMU_SCL);
@@ -168,6 +169,16 @@ void receiveEvent(int howMany) {
 //-this is after receiveEvent-------------------------------
 void requestEvent() { Wire.write(write_buffer,write_buffer_len ); }
 
+void report_bat(){
+ if (PMU.isBatteryConnect()) {
+    write_buffer[0] = REG_ID_BAT;
+    write_buffer[1] = PMU.getBatteryPercent();
+
+    write_buffer_len = 2;  
+    requestEvent();
+  }
+}
+
 void printPMU() {
   Serial1.print("isCharging:");
   Serial1.println(PMU.isCharging() ? "YES" : "NO");
@@ -236,6 +247,7 @@ void check_pmu_int() {
       } else {
         pmu_status = pcnt;
       }
+      low_bat();
     }
   }
 
@@ -249,11 +261,20 @@ void check_pmu_int() {
     Serial1.print(" BIN:");
     Serial1.println(status, BIN);
 
+
+    // When the set low-voltage battery percentage warning threshold is reached,
+    // set the threshold through getLowBatWarnThreshold( 5% ~ 20% )
     if (PMU.isDropWarningLevel2Irq()) {
       Serial1.println("isDropWarningLevel2");
+      report_bat();
     }
+
+    // When the set low-voltage battery percentage shutdown threshold is reached
+    // set the threshold through setLowBatShutdownThreshold()    
     if (PMU.isDropWarningLevel1Irq()) {
-      Serial1.println("isDropWarningLevel1");
+      report_bat();
+      //
+      PMU.shutdown();
     }
     if (PMU.isGaugeWdtTimeoutIrq()) {
       Serial1.println("isWdtTimeout");
@@ -272,6 +293,7 @@ void check_pmu_int() {
     }
     if (PMU.isVbusRemoveIrq()) {
       Serial1.println("isVbusRemove");
+      stop_chg();
     }
     if (PMU.isBatInsertIrq()) {
       pcnt = PMU.getBatteryPercent();
@@ -287,6 +309,7 @@ void check_pmu_int() {
     if (PMU.isBatRemoveIrq()) {
       pmu_status = 0xff;
       Serial1.println("isBatRemove");
+      stop_chg();
     }
 
     if (PMU.isPekeyShortPressIrq()) {
@@ -336,6 +359,7 @@ void check_pmu_int() {
       }
       pmu_status = bitClear(pcnt, 7);
       Serial1.println("isBatChagerDone");
+      stop_chg();
     }
     if (PMU.isBatChagerStartIrq()) {
       pcnt = PMU.getBatteryPercent();
@@ -345,6 +369,9 @@ void check_pmu_int() {
       }
       pmu_status = bitSet(pcnt, 7);
       Serial1.println("isBatChagerStart");
+      if(PMU.isBatteryConnect()) {
+        start_chg();
+      }
     }
     if (PMU.isBatDieOverTemperatureIrq()) {
       Serial1.println("isBatDieOverTemperature");
@@ -451,7 +478,8 @@ void setup() {
   PMU.enableVbusVoltageMeasure();
   PMU.enableBattVoltageMeasure();
   PMU.enableSystemVoltageMeasure();
-  PMU.setChargingLedMode(XPOWERS_CHG_LED_OFF);
+  
+  PMU.setChargingLedMode(XPOWERS_CHG_LED_CTRL_CHG);
 
   pinMode(pmu_irq_pin, INPUT_PULLUP);
   attachInterrupt(pmu_irq_pin, set_pmu_flag, FALLING);
@@ -469,10 +497,28 @@ void setup() {
                 // XPOWERS_AXP2101_PKEY_NEGATIVE_IRQ |
                 // XPOWERS_AXP2101_PKEY_POSITIVE_IRQ   |   //POWER KEY
   );
+    // setLowBatWarnThreshold Range:  5% ~ 20%
+    // The following data is obtained from actual testing , Please see the description below for the test method.
+    // 20% ~= 3.7v
+    // 15% ~= 3.6v
+    // 10% ~= 3.55V
+    // 5%  ~= 3.5V
+    // 1%  ~= 3.4V
+  PMU.setLowBatWarnThreshold(5); // Set to trigger interrupt when reaching 5%
 
+    // setLowBatShutdownThreshold Range:  0% ~ 15%
+    // The following data is obtained from actual testing , Please see the description below for the test method.
+    // 15% ~= 3.6v
+    // 10% ~= 3.55V
+    // 5%  ~= 3.5V
+    // 1%  ~= 3.4V
+  //PMU.setLowBatShutdownThreshold(1);  // Set to trigger interrupt when reaching 1%
+
+
+  
   run_time = 0;
   keycb_start = 1;
-  
+  low_bat();
   //printf("Start pico");
 }
 
