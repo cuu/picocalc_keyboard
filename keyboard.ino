@@ -80,6 +80,14 @@ static struct {
     bool numlock;
 } self;
 
+void output_string(char*str){
+ if (!self._key_callback) return;
+ 
+  while(*str){
+    self._key_callback(*str,   KEY_STATE_PRESSED);
+    str++;
+  }
+}
 static void transition_to(struct list_item * const p_item, const enum key_state next_state)
 {
   bool output = true;
@@ -91,7 +99,8 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
     return;
 
   char chr = p_entry->chr;
-  if(chr == KEY_CAPS_LOCK){
+  
+  if(chr == KEY_CAPS_LOCK && next_state == KEY_STATE_PRESSED ){
     if(self.capslock == true){
       self.capslock = false;
     }else{
@@ -174,7 +183,6 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
                 lcd_backlight_update(LCD_BACKLIGHT_STEP);
               }else if(chr == ' '){
                 //loop update keyboard backlight
-                //kbd_backlight_update(KBD_BACKLIGHT_STEP);
                 kbd_backlight_update_offset();
               }else if(chr == 'B'){
                 show_bat_segs();
