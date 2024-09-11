@@ -27,6 +27,7 @@ struct list_item
 {   
     const struct entry *p_entry;
     uint32_t hold_start_time;
+    uint32_t last_repeat_time;
     enum key_state state;
     bool mods[MOD_LAST];
 };
@@ -190,7 +191,15 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
   }
 
   if (chr != 0 && output==true) {
-    self._key_callback(chr, next_state);
+    if(next_state == KEY_STATE_HOLD){
+      if( (chr >= 32 && chr <= 127) || chr == KEY_BACKSPACE ) {
+        self._key_callback(chr, KEY_STATE_PRESSED);
+      }else{
+        self._key_callback(chr, next_state);
+      }
+    }else{
+      self._key_callback(chr, next_state);
+    }
   }
 }
 
@@ -233,13 +242,13 @@ static void next_item_state(struct list_item * const p_item, const bool pressed)
         transition_to(p_item, KEY_STATE_PRESSED);
 
         p_item->hold_start_time = time_uptime_ms();
+        p_item->last_repeat_time = 0;
       }
       break;
 
     case KEY_STATE_PRESSED:
       if ((time_uptime_ms() - p_item->hold_start_time) > KEY_HOLD_TIME) {
         transition_to(p_item, KEY_STATE_HOLD);
-        
        } else if(!pressed) {
         transition_to(p_item, KEY_STATE_RELEASED);
       }
@@ -248,6 +257,13 @@ static void next_item_state(struct list_item * const p_item, const bool pressed)
     case KEY_STATE_HOLD:
       if (!pressed){       
         transition_to(p_item, KEY_STATE_RELEASED);
+      }else{
+      if ((time_uptime_ms() - p_item->hold_start_time) > KEY_HOLD_TIME) {
+          if(time_uptime_ms() - p_item->last_repeat_time > 100) {
+            transition_to(p_item, KEY_STATE_HOLD);
+            p_item->last_repeat_time = time_uptime_ms();
+          }
+        }
       }
       break;
     case KEY_STATE_RELEASED:
