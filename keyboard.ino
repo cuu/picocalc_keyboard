@@ -100,14 +100,6 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
 
   char chr = p_entry->chr;
   
-  if(chr == KEY_CAPS_LOCK && next_state == KEY_STATE_PRESSED ){
-    if(self.capslock == true){
-      self.capslock = false;
-    }else{
-      self.capslock = true;
-    }
-    self.capslock_changed = true;
-  }
   switch (p_entry->mod) {
     case MOD_ALT:
       if (reg_is_bit_set(REG_ID_CFG, CFG_REPORT_MODS))
@@ -135,22 +127,23 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
       
     default:
     {
+      //toggle operation
+      if(chr == KEY_CAPS_LOCK && next_state == KEY_STATE_PRESSED ){
+        if(self.capslock == true){
+          self.capslock = false;
+        }else{
+          self.capslock = true;
+        }
+        self.capslock_changed = true;
+      }
+      
       if (reg_is_bit_set(REG_ID_CFG, CFG_USE_MODS)) {
-        const bool shift = (self.mods[MOD_SHL] || self.mods[MOD_SHR]) | self.capslock;
+        const bool shift = (self.mods[MOD_SHL] || self.mods[MOD_SHR]);
         const bool alt = self.mods[MOD_ALT] | self.numlock;
         const bool ctrl = self.mods[MOD_CTRL];//shortcuts control
         
         if (shift && (chr <'A' || chr >'Z')) {
-            if(self.capslock){
-              if(chr == KEY_BACKSPACE || chr == KEY_ENTER){
-                //keep
-              }else{
-                chr = p_entry->symb;
-              }
-            }else{
-              chr = p_entry->symb;
-            }
-            
+          chr = p_entry->symb;  
         }else if(self.capslock && (chr >= 'A' && chr <= 'Z')){
            //pass
         }
