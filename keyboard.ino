@@ -57,8 +57,8 @@ static const struct entry btn_entries[NUM_OF_BTNS] =
   {']','}'},
   {'[','{'},
   {KEY_RIGHT},
-  {KEY_UP},
-  {KEY_DOWN},
+  {KEY_UP,KEY_PAGE_UP},
+  {KEY_DOWN,KEY_PAGE_DOWN},
   {KEY_LEFT}
  
 };
@@ -193,7 +193,7 @@ static void transition_to(struct list_item * const p_item, const enum key_state 
 
   if (chr != 0 && output==true) {
     if(next_state == KEY_STATE_HOLD){
-      if( (chr >= 32 && chr <= 127) || chr == KEY_BACKSPACE ) {
+      if( (chr >= 32 && chr <= 127) || chr == KEY_ENTER || chr == KEY_TAB || chr == KEY_DEL || chr == KEY_BACKSPACE  || chr == KEY_UP || chr == KEY_DOWN || chr == KEY_RIGHT || chr == KEY_LEFT ) {
         self._key_callback(chr, KEY_STATE_PRESSED);
       }else{
         self._key_callback(chr, next_state);

@@ -335,6 +335,7 @@ void check_pmu_int() {
       //PMU.writeDataBuffer(data, XPOWERS_AXP2101_DATA_BUFFER_SIZE);
       digitalWrite(PA13, LOW);
       digitalWrite(PA14, LOW);
+      PMU.setChargingLedMode(XPOWERS_CHG_LED_CTRL_CHG);
       PMU.shutdown();
     }
 

@@ -42,6 +42,9 @@ enum key_state
 #define KEY_HOME      0xD2
 #define KEY_DEL       0xD4
 #define KEY_END       0xD5
+#define KEY_PAGE_UP    0xd6
+#define KEY_PAGE_DOWN  0xd7
+
 #define KEY_CAPS_LOCK   0xC1
 
 #define KEY_F1 0x81
