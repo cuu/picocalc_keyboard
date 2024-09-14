@@ -12,9 +12,9 @@ void indicator_led_off(){
 void flash_one_time(int ts,int restore_status) {
     for(int i=0;i<ts;i++) {
       indicator_led_on();
-      delay(300);
+      delay(400);
       indicator_led_off();
-      delay(100);
+      delay(200);
     }
     digitalWrite(PC13,restore_status);
 }
@@ -41,8 +41,12 @@ void low_bat(){
   if(PMU.isBatteryConnect()){
     int pcnt = PMU.getBatteryPercent();
      if(pcnt <= LOW_BAT_VAL){
-        indicator_led_off();
-        PMU.setChargingLedMode(XPOWERS_CHG_LED_ON);
+        indicator_led_off();      
+        if(pcnt == 1) {
+          PMU.setChargingLedMode(XPOWERS_CHG_LED_BLINK_1HZ);
+        }else{
+          PMU.setChargingLedMode(XPOWERS_CHG_LED_ON);
+        }
      }else{
         indicator_led_on();
         PMU.setChargingLedMode(XPOWERS_CHG_LED_OFF);

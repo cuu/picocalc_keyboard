@@ -2,7 +2,7 @@
 #include "backlight.h"
 
 #define KBD_BACKLIGHT_SEG 4
-uint8_t kbd_backlight_segs[KBD_BACKLIGHT_SEG] = {40,40,80,90};
+uint8_t kbd_backlight_segs[KBD_BACKLIGHT_SEG] = {20,40,80,110};
 uint8_t kbd_backlight_offset = 0;
 
 void lcd_backlight_update_reg() {
