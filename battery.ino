@@ -35,10 +35,15 @@ void show_bat_segs(){
     //show 3 times
      flash_one_time(3,last_d201_status);
   }
+  
+  if(PMU.isCharging()){
+    start_chg();
+  }
+
 }
 
 void low_bat(){
-  if(PMU.isBatteryConnect()){
+  if(PMU.isBatteryConnect() && !PMU.isCharging()){
     int pcnt = PMU.getBatteryPercent();
      if(pcnt <= LOW_BAT_VAL){
         indicator_led_off();      
