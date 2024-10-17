@@ -530,6 +530,9 @@ void check_hp_det(){
     if( head_phone_status != v ) {
       Serial1.println("HeadPhone detected");
     }
+    digitalWrite(PA14,LOW);
+  }else{
+    digitalWrite(PA14,HIGH);
   }
   head_phone_status = v;
   
