@@ -48,7 +48,7 @@ void low_bat(){
      if(pcnt <= LOW_BAT_VAL){
         indicator_led_off();      
         if(pcnt == 1) {
-          PMU.setChargingLedMode(XPOWERS_CHG_LED_BLINK_1HZ);
+          PMU.setChargingLedMode(XPOWERS_CHG_LED_BLINK_4HZ);
         }else{
           PMU.setChargingLedMode(XPOWERS_CHG_LED_ON);
         }

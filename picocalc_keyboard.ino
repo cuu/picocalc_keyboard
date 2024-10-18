@@ -473,6 +473,7 @@ void setup() {
   // It is necessary to disable the detection function of the TS pin on the
   // board without the battery temperature detection function, otherwise it will
   // cause abnormal charging
+  PMU.setSysPowerDownVoltage(2750);
   PMU.disableTSPinMeasure();
   // PMU.enableTemperatureMeasure();
   PMU.enableBattDetection();
@@ -513,7 +514,7 @@ void setup() {
     // 10% ~= 3.55V
     // 5%  ~= 3.5V
     // 1%  ~= 3.4V
-  //PMU.setLowBatShutdownThreshold(1);  // Set to trigger interrupt when reaching 1%
+  PMU.setLowBatShutdownThreshold(1);  // Set to trigger interrupt when reaching 1%
 
 
   
