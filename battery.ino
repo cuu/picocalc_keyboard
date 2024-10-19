@@ -46,11 +46,12 @@ void low_bat(){
   if(PMU.isBatteryConnect() && !PMU.isCharging()){
     int pcnt = PMU.getBatteryPercent();
      if(pcnt <= LOW_BAT_VAL){
+      //This is related to the battery charging and discharging logic. If you're not sure what you're doing, please don't modify it, as it could damage the battery.
         indicator_led_off();      
-        if(pcnt <= 1) {
+        if(pcnt <= 1) {//This is related to the battery charging and discharging logic. If you're not sure what you're doing, please don't modify it, as it could damage the battery.
           PMU.setChargingLedMode(XPOWERS_CHG_LED_BLINK_4HZ);
-          if(pcnt==0){//
-            PMU.shutdown();
+          if(pcnt==0){//This is related to the battery charging and discharging logic. If you're not sure what you're doing, please don't modify it, as it could damage the battery.
+            PMU.shutdown();//This is related to the battery charging and discharging logic. If you're not sure what you're doing, please don't modify it, as it could damage the battery.
           }
         }else{
           PMU.setChargingLedMode(XPOWERS_CHG_LED_ON);

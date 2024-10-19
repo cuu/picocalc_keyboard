@@ -270,7 +270,8 @@ void check_pmu_int() {
     }
 
     // When the set low-voltage battery percentage shutdown threshold is reached
-    // set the threshold through setLowBatShutdownThreshold()    
+    // set the threshold through setLowBatShutdownThreshold()  
+    //This is related to the battery charging and discharging logic. If you're not sure what you're doing, please don't modify it, as it could damage the battery.
     if (PMU.isDropWarningLevel1Irq()) {
       report_bat();
       //
@@ -514,7 +515,7 @@ void setup() {
     // 10% ~= 3.55V
     // 5%  ~= 3.5V
     // 1%  ~= 3.4V
-  PMU.setLowBatShutdownThreshold(1);  // Set to trigger interrupt when reaching 1%
+  PMU.setLowBatShutdownThreshold(1);  //This is related to the battery charging and discharging logic. If you're not sure what you're doing, please don't modify it, as it could damage the battery.
 
 
   run_time = 0;
