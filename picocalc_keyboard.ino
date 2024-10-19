@@ -517,7 +517,6 @@ void setup() {
   PMU.setLowBatShutdownThreshold(1);  // Set to trigger interrupt when reaching 1%
 
 
-  
   run_time = 0;
   keycb_start = 1;
   low_bat();
