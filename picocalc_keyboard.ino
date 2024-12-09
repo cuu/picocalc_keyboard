@@ -467,7 +467,7 @@ void setup() {
 
   keyboard_init();
   keyboard_set_key_callback(key_cb);
-  lcd_backlight_update(-204);
+  lcd_backlight_update(-223);
   
   digitalWrite(PA13, HIGH);
 
